@@ -9,7 +9,7 @@ import subprocess
 import time
 
 while True:
-	# Initialize pins for output
+    # Initialize pins for output
     subprocess.call(['gpio', 'mode', '0', 'out'])
     subprocess.call(['gpio', 'mode', '1', 'out'])
     # Open the file temp is stored in
