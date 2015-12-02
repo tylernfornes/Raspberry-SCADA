@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from pymodbus.server.async import StartTcpServer
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock
@@ -7,9 +9,11 @@ from twisted.internet.task import LoopingCall
 from threading import Thread
 from time import sleep
 import os
+
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 temperature =0
+
 class Temp(Thread):
     """
      A class for getting the current temp of a DS18B20
@@ -71,24 +75,28 @@ def updating_writer(a):
     values = [int(pi.getCurrentTemp()*100)]
     context[slave_id].setValues(register,address,values)
 
-store = ModbusSlaveContext(
-    di = ModbusSequentialDataBlock(0, [0]*100),
-    co = ModbusSequentialDataBlock(0, [0]*100),
-    hr = ModbusSequentialDataBlock(0, [0]*100),
-    ir = ModbusSequentialDataBlock(0, [0]*100))
-context = ModbusServerContext(slaves=store, single=True)
+def main():
+    store = ModbusSlaveContext(
+        di = ModbusSequentialDataBlock(0, [0]*100),
+        co = ModbusSequentialDataBlock(0, [0]*100),
+        hr = ModbusSequentialDataBlock(0, [0]*100),
+        ir = ModbusSequentialDataBlock(0, [0]*100))
+    context = ModbusServerContext(slaves=store, single=True)
+    
+    identity = ModbusDeviceIdentification()
+    identity.VendorName  = 'pymodbus'
+    identity.ProductCode = 'PM'
+    identity.VendorUrl   = 'http://github.com/bashwork/pymodbus/'
+    identity.ProductName = 'pymodbus Server'
+    identity.ModelName   = 'pymodbus Server'
+    identity.MajorMinorRevision = '1.0'
+    pi = Temp()
+    pi.start()
+    time = 5 # 5 seconds delaytime = 5 # 5 seconds delay
+    loop = LoopingCall(f=updating_writer, a=(context,))
+    loop.start(time, now=False) # initially delay by time
+    StartTcpServer(context, identity=identity, address=("10.80.100.54", 502))
+    #change localhost to your ip address.
 
-identity = ModbusDeviceIdentification()
-identity.VendorName  = 'pymodbus'
-identity.ProductCode = 'PM'
-identity.VendorUrl   = 'http://github.com/bashwork/pymodbus/'
-identity.ProductName = 'pymodbus Server'
-identity.ModelName   = 'pymodbus Server'
-identity.MajorMinorRevision = '1.0'
-pi = Temp()
-pi.start()
-time = 5 # 5 seconds delaytime = 5 # 5 seconds delay
-loop = LoopingCall(f=updating_writer, a=(context,))
-loop.start(time, now=False) # initially delay by time
-StartTcpServer(context, identity=identity, address=("10.80.100.54", 502))
-#change localhost to your ip address.
+if __name__ == '__main__':
+	main()
