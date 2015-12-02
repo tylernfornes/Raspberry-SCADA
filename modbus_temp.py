@@ -52,7 +52,7 @@ class Temp(Thread):
                 if crcLine.find("NO") > -1:
                     temp = -999
                 self.currentTemp = temp
-                #print "Current: " + str(self.currentTemp) + " " + str(self.fileName)
+                print "Current: " + str(self.currentTemp) + " " + str(self.fileName)
             sleep(1)
 
     #returns the current temp for the probe
@@ -76,6 +76,7 @@ def updating_writer(a):
     context[slave_id].setValues(register,address,values)
 
 def main():
+    # initialize the four register types
     store = ModbusSlaveContext(
         di = ModbusSequentialDataBlock(0, [0]*100),
         co = ModbusSequentialDataBlock(0, [0]*100),
@@ -90,7 +91,6 @@ def main():
     identity.ProductName = 'pymodbus Server'
     identity.ModelName   = 'pymodbus Server'
     identity.MajorMinorRevision = '1.0'
-    pi = Temp()
     pi.start()
     time = 5 # 5 seconds delaytime = 5 # 5 seconds delay
     loop = LoopingCall(f=updating_writer, a=(context,))
@@ -99,4 +99,5 @@ def main():
     #change localhost to your ip address.
 
 if __name__ == '__main__':
-	main()
+    pi = Temp()
+    main()
