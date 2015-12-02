@@ -15,7 +15,7 @@ try:
         subprocess.call(['gpio', 'mode', '0', 'out'])
         subprocess.call(['gpio', 'mode', '1', 'out'])
         # Open the file temp is stored in
-        temp_file = open('/sys/bus/w1/devices/28-000006f07121/w1_slave')
+        temp_file = open('/sys/bus/w1/devices/28-000006efeb10/w1_slave')
         # Read line containing tempurature
         line = temp_file.readlines() 
         # Close the file
@@ -37,7 +37,7 @@ try:
         time.sleep(3)
 except KeyboardInterrupt:
     # disable the lights
-    subprocess.call(['gpio', 'mode', '0', 'out'])
-    subprocess.call(['gpio', 'mode', '1', 'out'])
+    subprocess.call(['gpio', 'write', '0', '0'])
+    subprocess.call(['gpio', 'write', '1', '0'])
     sys.exit(0)
     
