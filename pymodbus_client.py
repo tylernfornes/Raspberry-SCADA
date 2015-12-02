@@ -6,6 +6,7 @@ import logging
 import argparse
 import subprocess
 import time
+import sys
 
 def get_args():
 	parser = argparse.ArgumentParser(description='Copies a given file')
@@ -32,7 +33,7 @@ def enable_light(temp):
 	subprocess.call(['gpio', 'mode', '1', 'out'])
 
 	# If higher, write 1 to red LED, if lower write 1 to green LED
-	if int(temp) > 7000:
+	if int(temp) > 7400:
 		subprocess.call(['gpio', 'write', '0', '1'])
 		subprocess.call(['gpio', 'write', '1', '0'])
 		print "GREATER"	
@@ -52,7 +53,12 @@ def main():
 	# get value of holding registers (first has the temperature value)
 	rr = client.read_holding_registers(0x00,1,unit=1)
 	temp = rr.registers[0]
-	enable_light(temp)
+	try:
+		while True:
+			enable_light(temp)
+			time.sleep(3)
+	except KeyboardInterrupt:
+		print "Exiting..."
 
 if __name__ == '__main__':
 	main()
