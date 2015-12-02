@@ -4,6 +4,8 @@
 from pymodbus.client.sync import ModbusTcpClient as ModbusClient
 import logging
 import argparse
+import subprocess
+import time
 
 def get_args():
 	parser = argparse.ArgumentParser(description='Copies a given file')
@@ -20,6 +22,25 @@ def get_args():
 	# read arguments (the address of the server)
 	return args
 
+def enable_light(temp):
+	"""
+	Enables the red or green light, depending on the temp
+	@param temp - the value of the temperature in degrees Fahrenheit * 100
+	"""
+	# Initialize pins for output
+	subprocess.call(['gpio', 'mode', '0', 'out'])
+	subprocess.call(['gpio', 'mode', '1', 'out'])
+
+	# If higher, write 1 to red LED, if lower write 1 to green LED
+	if int(temp) > 7000:
+		subprocess.call(['gpio', 'write', '0', '1'])
+		subprocess.call(['gpio', 'write', '1', '0'])
+		print "GREATER"	
+	else:
+		subprocess.call(['gpio', 'write', '1', '1'])
+		subprocess.call(['gpio', 'write', '0', '0'])
+		print "LESS"
+	print temp
 
 def main():
 	args = get_args()
@@ -30,7 +51,9 @@ def main():
 
 	# get value of holding registers (first has the temperature value)
 	rr = client.read_holding_registers(0x00,1,unit=1)
-	print str(type(rr.registers[0]))
+	temp = rr.registers[0]
+	enable_light(temp)
 
 if __name__ == '__main__':
 	main()
+
