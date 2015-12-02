@@ -58,6 +58,8 @@ def main():
 			enable_light(temp)
 			time.sleep(3)
 	except KeyboardInterrupt:
+		subprocess.call(['gpio', 'write', '0', '0'])
+		subprocess.call(['gpio', 'write', '1', '0'])
 		print "Exiting..."
 
 if __name__ == '__main__':
