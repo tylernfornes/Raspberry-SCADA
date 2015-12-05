@@ -22,7 +22,13 @@ class Temp(Thread):
 
     def __init__(self, fileName=''):
         Thread.__init__(self)
-        self.tempDir = '/sys/bus/w1/devices/28-000006f07121'
+        tempDir = ''
+        devlist = os.listdir('/sys/bus/w1/devices/')
+        for d in devlist:
+            if d[:2] == "28":
+		tempDir = d
+        self.tempDir = '/sys/bus/w1/devices/' + tempDir
+        print self.tempDir
         list = os.listdir(self.tempDir)
         if(list[0][:2]=="28"):
          fileName=list[0]
