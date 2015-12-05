@@ -9,6 +9,7 @@ from twisted.internet.task import LoopingCall
 from threading import Thread
 from time import sleep
 import os
+import argparse
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -95,9 +96,14 @@ def main():
     time = 5 # 5 seconds delaytime = 5 # 5 seconds delay
     loop = LoopingCall(f=updating_writer, a=(context,))
     loop.start(time, now=False) # initially delay by time
-    StartTcpServer(context, identity=identity, address=("10.80.100.54", 502))
+    StartTcpServer(context, identity=identity, address=(args.address, 502))
     #change localhost to your ip address.
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Listens on a specified interface for modbus connections')
+    parser.add_argument('-a', dest='address', help='The IP address to bind to', required=True)
+
+    # read arguments (the name of the file to copy)
+    args = parser.parse_args()
     pi = Temp()
     main()
