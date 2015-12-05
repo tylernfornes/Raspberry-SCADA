@@ -25,6 +25,7 @@ class Temp(Thread):
         tempDir = ''
         devlist = os.listdir('/sys/bus/w1/devices/')
         for d in devlist:
+            # temperature device name always begins with "28", add that to the full path
             if d[:2] == "28":
 		tempDir = d
         self.tempDir = '/sys/bus/w1/devices/' + tempDir
