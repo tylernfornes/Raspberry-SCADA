@@ -6,7 +6,7 @@ To deploy on Raspbian, run the following commands:
 ```
 git clone https://github.com/tylernfornes/Raspberry-SCADA
 cd Raspberry-SCADA
-./deploy.sh
+sudo ./deploy.sh
 ```
 
 Hardware Requirements:
